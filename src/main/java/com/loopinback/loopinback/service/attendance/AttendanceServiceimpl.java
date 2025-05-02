@@ -43,7 +43,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public AttendanceResponseDTO getAttendanceById(Long id) {
         Attendance attendance = attendanceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con id: " + id));
         return convertToResponseDTO(attendance);
     }
 
@@ -61,17 +61,17 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public Attendance registerAttendance(Long eventId, Long userId) {
-    
+
         if (attendanceRepository.existsByUserIdAndEventId(userId, eventId)) {
-            throw new IllegalStateException("User is already registered for this event");
+            throw new IllegalStateException("El usuario ya está registrado para este evento");
         }
 
         // Get user and event
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
 
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + eventId));
 
         // Generate ticket code (UUID is a good option for unique codes)
         String ticketCode = UUID.randomUUID().toString();
@@ -93,14 +93,14 @@ public class AttendanceServiceImpl implements AttendanceService {
                         attendanceRepository::delete,
                         () -> {
                             throw new ResourceNotFoundException(
-                                    "Attendance not found for user: " + userId + " and event: " + eventId);
+                                    "Asistencia no encontrada para la usuario:" + userId + " y evento: " + eventId);
                         });
     }
 
     @Override
     public void deleteAttendance(Long id) {
         if (!attendanceRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Attendance not found with id: " + id);
+            throw new ResourceNotFoundException("Asistencia no encontrada con id: " + id);
         }
         attendanceRepository.deleteById(id);
     }
@@ -108,7 +108,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public AttendanceResponseDTO verifyTicket(String ticketCode) {
         Attendance attendance = attendanceRepository.findByTicketCode(ticketCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with code: " + ticketCode));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket no encontrado con el código: " + ticketCode));
         return convertToResponseDTO(attendance);
     }
 
@@ -128,7 +128,6 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .toList();
     }
 
-  
     private AttendanceResponseDTO convertToResponseDTO(Attendance attendance) {
         return new AttendanceResponseDTO(
                 attendance.getId(),

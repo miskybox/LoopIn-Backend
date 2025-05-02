@@ -1,4 +1,5 @@
 package com.loopinback.loopinback.service.event;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,14 +47,14 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDTO getEventById(Long id) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado"));
         return convertToDto(event);
     }
 
     @Override
     public EventResponseDTO createEvent(EventRequestDTO dto, User creator) {
         if (creator == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Se requiere creador");
         }
 
         Event event = new Event();
@@ -67,7 +68,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDTO updateEvent(EventRequestDTO dto) {
         Event event = eventRepository.findById(dto.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado"));
 
         populateEventFromDto(event, dto);
         Event updated = eventRepository.save(event);
@@ -78,7 +79,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEvent(Long id) {
         if (!eventRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado");
         }
         eventRepository.deleteById(id);
     }
@@ -86,7 +87,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<AttendanceResponseDTO> getEventAttendances(Long eventId) {
         if (!eventRepository.existsById(eventId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado");
         }
 
         List<Attendance> attendances = attendanceRepository.findByEventId(eventId);
@@ -108,7 +109,7 @@ public class EventServiceImpl implements EventService {
         try {
             category = Category.valueOf(categoryStr.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid category");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoría inválida");
         }
 
         Pageable pageable = PageRequest.of(page, size);
@@ -127,7 +128,7 @@ public class EventServiceImpl implements EventService {
             try {
                 category = Category.valueOf(categoryStr.toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid category");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoría inválida");
             }
         }
 
@@ -166,7 +167,7 @@ public class EventServiceImpl implements EventService {
             Category category = Category.valueOf(categoryStr);
             event.setCategory(category);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid category value");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor de categoría no válido");
         }
     }
 }
