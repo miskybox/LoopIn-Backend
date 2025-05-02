@@ -1,0 +1,140 @@
+package com.loopinback.loopinback.service.attendance;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.loopinback.loopinback.dto.attendance.AttendanceResponseDTO;
+import com.loopinback.loopinback.exception.ResourceNotFoundException;
+import com.loopinback.loopinback.model.Attendance;
+import com.loopinback.loopinback.model.Event;
+import com.loopinback.loopinback.model.User;
+import com.loopinback.loopinback.repository.AttendanceRepository;
+import com.loopinback.loopinback.repository.EventRepository;
+import com.loopinback.loopinback.repository.UserRepository;
+
+@Service
+public class AttendanceServiceImpl implements AttendanceService {
+
+    private final AttendanceRepository attendanceRepository;
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+
+    public AttendanceServiceImpl(
+            AttendanceRepository attendanceRepository,
+            UserRepository userRepository,
+            EventRepository eventRepository) {
+        this.attendanceRepository = attendanceRepository;
+        this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
+    }
+
+    @Override
+    public List<AttendanceResponseDTO> getAllAttendances() {
+        return attendanceRepository.findAll()
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public AttendanceResponseDTO getAttendanceById(Long id) {
+        Attendance attendance = attendanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with id: " + id));
+        return convertToResponseDTO(attendance);
+    }
+
+    /**
+     * Registers a user for an event by creating an attendance entry.
+     * 
+     * @param eventId the ID of the event the user is registering for
+     * @param userId  the ID of the user who is registering
+     * @return the created Attendance object
+     * @throws IllegalStateException     if the user is already registered for the
+     *                                   event
+     * @throws ResourceNotFoundException if either the user or event does not exist
+     */
+
+    @Override
+    @Transactional
+    public Attendance registerAttendance(Long eventId, Long userId) {
+    
+        if (attendanceRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw new IllegalStateException("User is already registered for this event");
+        }
+
+        // Get user and event
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        // Generate ticket code (UUID is a good option for unique codes)
+        String ticketCode = UUID.randomUUID().toString();
+
+        Attendance attendance = new Attendance();
+        attendance.setUser(user);
+        attendance.setEvent(event);
+        attendance.setTicketCode(ticketCode);
+        attendance.setRegisteredAt(LocalDateTime.now());
+
+        return attendanceRepository.save(attendance);
+    }
+
+    @Override
+    @Transactional
+    public void unregisterAttendance(Long eventId, Long userId) {
+        attendanceRepository.findByUserIdAndEventId(userId, eventId)
+                .ifPresentOrElse(
+                        attendanceRepository::delete,
+                        () -> {
+                            throw new ResourceNotFoundException(
+                                    "Attendance not found for user: " + userId + " and event: " + eventId);
+                        });
+    }
+
+    @Override
+    public void deleteAttendance(Long id) {
+        if (!attendanceRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Attendance not found with id: " + id);
+        }
+        attendanceRepository.deleteById(id);
+    }
+
+    @Override
+    public AttendanceResponseDTO verifyTicket(String ticketCode) {
+        Attendance attendance = attendanceRepository.findByTicketCode(ticketCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with code: " + ticketCode));
+        return convertToResponseDTO(attendance);
+    }
+
+    @Override
+    public List<AttendanceResponseDTO> getEventAttendances(Long eventId) {
+        return attendanceRepository.findByEventId(eventId)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<AttendanceResponseDTO> getUserAttendances(Long userId) {
+        return attendanceRepository.findByUserId(userId)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+  
+    private AttendanceResponseDTO convertToResponseDTO(Attendance attendance) {
+        return new AttendanceResponseDTO(
+                attendance.getId(),
+                attendance.getUser().getId(),
+                attendance.getUser().getUsername(),
+                attendance.getEvent().getId(),
+                attendance.getEvent().getTitle());
+    }
+}
