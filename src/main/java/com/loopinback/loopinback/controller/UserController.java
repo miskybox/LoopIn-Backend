@@ -1,4 +1,7 @@
 package com.loopinback.loopinback.controller;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -8,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 import com.loopinback.loopinback.dto.attendance.AttendanceRequestDTO;
 import com.loopinback.loopinback.dto.event.EventResponseDTO;
@@ -16,6 +18,8 @@ import com.loopinback.loopinback.dto.user.UserRequestDTO;
 import com.loopinback.loopinback.dto.user.UserResponseDTO;
 import com.loopinback.loopinback.model.User;
 import com.loopinback.loopinback.service.user.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userDTO) {
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO userDTO) {
         UserResponseDTO user = userService.registerUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
@@ -41,7 +45,7 @@ public class UserController {
     public ResponseEntity<List<EventResponseDTO>> getEventsCreatedByUser(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "14") int size) {
         return ResponseEntity.ok(userService.getEventsCreatedByUser(user.getId()));
     }
 
@@ -49,8 +53,7 @@ public class UserController {
     public ResponseEntity<List<AttendanceRequestDTO>> getAttendancesByUser(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "14") int size) {
         return ResponseEntity.ok(userService.getAttendancesByUser(user.getId()));
     }
 }
-

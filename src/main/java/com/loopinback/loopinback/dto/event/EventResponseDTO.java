@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 import com.loopinback.loopinback.model.Category;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EventResponseDTO {
     private Long id;
     private String title;
@@ -20,4 +22,6 @@ public class EventResponseDTO {
     private String location;
     private Category category;
     private String creatorUsername;
+    private String imageUrl;
+    private Integer maxAttendees;
 }

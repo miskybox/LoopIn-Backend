@@ -1,4 +1,5 @@
 package com.loopinback.loopinback.service.user;
+
 import java.util.List;
 
 import com.loopinback.loopinback.dto.attendance.AttendanceRequestDTO;
@@ -12,6 +13,8 @@ public interface UserService {
 
     UserResponseDTO getUserById(Long id);
 
+    User findByUsername(String username);
+
     UserResponseDTO registerUser(UserRequestDTO userDTO);
 
     UserResponseDTO updateUser(UserRequestDTO userDTO);
@@ -21,7 +24,6 @@ public interface UserService {
     List<EventResponseDTO> getEventsCreatedByUser(Long userId);
 
     List<AttendanceRequestDTO> getAttendancesByUser(Long userId);
-
 
     UserResponseDTO convertToResponseDTO(User user);
 }
