@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.loopinback.loopinback.dto.attendance.AttendanceResponseDTO;
 import com.loopinback.loopinback.exception.ResourceNotFoundException;
@@ -62,18 +64,17 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Transactional
     public Attendance registerAttendance(Long eventId, Long userId) {
 
-        if (attendanceRepository.existsByUserIdAndEventId(userId, eventId)) {
+        if (Boolean.TRUE.equals(attendanceRepository.existsByUserIdAndEventId(userId, eventId))) {
             throw new IllegalStateException("El usuario ya está registrado para este evento");
         }
 
-        // Get user and event
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
 
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + eventId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Evento no encontrado con id: " + eventId));
 
-        // Generate ticket code (UUID is a good option for unique codes)
         String ticketCode = UUID.randomUUID().toString();
 
         Attendance attendance = new Attendance();

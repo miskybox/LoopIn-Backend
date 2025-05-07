@@ -1,4 +1,5 @@
 package com.loopinback.loopinback.service.attendance;
+
 import java.util.List;
 
 import com.loopinback.loopinback.dto.attendance.AttendanceResponseDTO;
@@ -22,4 +23,3 @@ public interface AttendanceService {
 
     List<AttendanceResponseDTO> getUserAttendances(Long userId);
 }
-

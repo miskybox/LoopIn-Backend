@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttendanceRequestDTO {
-    private Long userId;
     private Long eventId;
     private String ticketCode;
 }

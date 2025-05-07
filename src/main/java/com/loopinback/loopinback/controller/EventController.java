@@ -81,7 +81,7 @@ public class EventController {
         return ResponseEntity.ok(updatedEvent);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
             Principal principal) {
@@ -135,23 +135,5 @@ public class EventController {
 
         Page<EventResponseDTO> eventsPage = eventService.getUserEvents(user, page, size);
         return ResponseEntity.ok(PagedResponse.from(eventsPage));
-    }
-
-    @PostMapping("/{eventId}/attend")
-    public ResponseEntity<AttendanceResponseDTO> attendEvent(
-            @PathVariable Long eventId,
-            Principal principal) {
-
-        String username = principal.getName();
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        AttendanceResponseDTO attendance = eventService.attendEvent(eventId, user);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .header("X-Ticket-Code", attendance.getTicketCode())
-                .body(attendance);
     }
 }
