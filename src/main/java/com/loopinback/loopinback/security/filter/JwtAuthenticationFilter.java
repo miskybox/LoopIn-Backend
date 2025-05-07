@@ -56,10 +56,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET));
 
-        // Agregar el token al encabezado
         response.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
 
-        // También devolver el token en el cuerpo de la respuesta
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", SecurityConstants.TOKEN_PREFIX + token);
         tokenMap.put("username", username);

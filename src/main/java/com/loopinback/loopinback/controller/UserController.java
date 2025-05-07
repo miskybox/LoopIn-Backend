@@ -45,7 +45,7 @@ public class UserController {
     public ResponseEntity<List<EventResponseDTO>> getEventsCreatedByUser(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "14") int size) {
+            @RequestParam(defaultValue = "15") int size) {
         return ResponseEntity.ok(userService.getEventsCreatedByUser(user.getId()));
     }
 
@@ -53,7 +53,7 @@ public class UserController {
     public ResponseEntity<List<AttendanceRequestDTO>> getAttendancesByUser(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "14") int size) {
+            @RequestParam(defaultValue = "15") int size) {
         return ResponseEntity.ok(userService.getAttendancesByUser(user.getId()));
     }
 }

@@ -70,8 +70,4 @@ public class Event {
     public LocalDateTime getDate() {
         return startTime;
     }
-
-    public User getUser() {
-        return creator;
-    }
 }

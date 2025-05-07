@@ -51,7 +51,6 @@ public class LoopinbackApplication {
 		return args -> {
 			Dotenv dotenv = Dotenv.load();
 
-			// Crear usuario admin si no existe
 			if (userRepository.findByUsername(dotenv.get("ADMIN_USERNAME")).isEmpty()) {
 				User admin = User.builder()
 						.username(dotenv.get("ADMIN_USERNAME"))
@@ -61,7 +60,6 @@ public class LoopinbackApplication {
 				userRepository.save(admin);
 			}
 
-			// Crear usuario user si no existe
 			if (userRepository.findByUsername(dotenv.get("USER_USERNAME")).isEmpty()) {
 				User user = User.builder()
 						.username(dotenv.get("USER_USERNAME"))
