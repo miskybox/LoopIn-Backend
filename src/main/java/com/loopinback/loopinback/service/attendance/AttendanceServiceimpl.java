@@ -62,7 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Transactional
     public Attendance registerAttendance(Long eventId, Long userId) {
 
-        if (attendanceRepository.existsByUserIdAndEventId(userId, eventId)) {
+        if (Boolean.TRUE.equals(attendanceRepository.existsByUserIdAndEventId(userId, eventId))) {
             throw new IllegalStateException("El usuario ya está registrado para este evento");
         }
 

@@ -12,7 +12,7 @@ public class SecurityConstants {
     private static String getSecretKey() {
         String secretKey = System.getenv("JWT_SECRET_KEY");
         if (secretKey == null || secretKey.isEmpty()) {
-            // Clave por defecto si no está configurada la variable de entorno
+
             return "i8Duq+Y15U9FQP6n6fD+2V+wEUa8FdNeHAwdNahdfQ8=";
         }
         return secretKey;

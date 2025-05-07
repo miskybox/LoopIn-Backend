@@ -3,6 +3,7 @@ package com.loopinback.loopinback.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import com.loopinback.loopinback.security.filter.JwtAuthorizationFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
         private final UserDetailsService userDetailsService;
 
         public SecurityConfig(UserDetailsService userDetailsService) {
@@ -33,12 +35,21 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/events", "/api/events/**").permitAll()
+
                                                 .requestMatchers("/api/users/register", "/api/login").permitAll()
-                                                .requestMatchers("/api/users/profile/**").authenticated()
-                                                .requestMatchers("/api/events/create", "/api/events/**/edit")
+                                                // Permitir solo GET para consultas de eventos públicas
+                                                .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/{id}")
+                                                .permitAll()
+
+                                                .requestMatchers(HttpMethod.POST, "/api/events/create").authenticated()
+                                                .requestMatchers(HttpMethod.PUT, "/api/events/{id}/edit")
                                                 .authenticated()
-                                                .requestMatchers("/api/attendance/**").authenticated()
+                                                .requestMatchers(HttpMethod.DELETE, "/api/events/{id}/delete")
+                                                .authenticated()
+
+                                                .requestMatchers("/api/attendances/**").authenticated()
+                                                .requestMatchers("/api/users/me/**").authenticated()
+
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authConfig)),
                                                 UsernamePasswordAuthenticationFilter.class)
