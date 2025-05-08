@@ -25,7 +25,6 @@ public class LoopinbackApplication {
 			System.err.println("⚠️ Variables de entorno esenciales no están definidas correctamente.");
 		}
 
-		// Establecer propiedades del sistema
 		System.setProperty(DB_URL, dotenv.get(DB_URL, ""));
 		System.setProperty(DB_USER, dotenv.get(DB_USER, ""));
 		System.setProperty("DB_PASS", dotenv.get("DB_PASS", ""));

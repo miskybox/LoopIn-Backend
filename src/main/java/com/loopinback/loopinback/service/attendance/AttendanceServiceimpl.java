@@ -66,7 +66,6 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new IllegalStateException("El usuario ya está registrado para este evento");
         }
 
-        // Get user and event
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
 

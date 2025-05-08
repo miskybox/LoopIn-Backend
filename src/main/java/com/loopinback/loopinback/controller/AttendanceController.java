@@ -36,16 +36,14 @@ public class AttendanceController {
             @PathVariable Long eventId,
             Principal principal) {
 
-        // Obtener el usuario actual
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         try {
-            // Registrar asistencia
+
             Attendance attendance = attendanceService.registerAttendance(eventId, currentUser.getId());
 
-            // Crear DTO de respuesta
             AttendanceResponseDTO responseDTO = new AttendanceResponseDTO(
                     attendance.getId(),
                     currentUser.getId(),
@@ -64,12 +62,10 @@ public class AttendanceController {
             @PathVariable Long eventId,
             Principal principal) {
 
-        // Obtener el usuario actual
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Cancelar asistencia
         attendanceService.unregisterAttendance(eventId, currentUser.getId());
 
         return ResponseEntity.noContent().build();
@@ -77,12 +73,11 @@ public class AttendanceController {
 
     @GetMapping("/user")
     public ResponseEntity<List<AttendanceResponseDTO>> getUserAttendances(Principal principal) {
-        // Obtener el usuario actual
+
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Obtener asistencias del usuario
         List<AttendanceResponseDTO> attendances = attendanceService.getUserAttendances(currentUser.getId());
 
         return ResponseEntity.ok(attendances);

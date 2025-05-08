@@ -98,8 +98,6 @@ public class UserServiceImpl implements UserService {
                 user.getProfileImageUrl());
     }
 
-    // Helpers
-
     private User getUserEntity(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
